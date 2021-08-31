@@ -1,0 +1,46 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Check Balance{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    
+        <div class="register-container formContainer">
+            <div id="list_error" class="hidden"></div>
+    <h3>Check Balance</h3>
+    <form id='form' class="form-container">
+    <div class="form-div">
+        <input type='number' placeholder="Account Number" class='form-control' id="account_number" required />
+    </div>
+    <div class="form-div btn-div">
+        <button class='btn'>Check</button>
+    </div>
+    </form>
+</div>
+</div>
+<script>
+    document.getElementById('form').onsubmit = (e) => {
+        e.preventDefault();
+
+        fetch('/balance', {
+            method: 'POST',
+            body: JSON.stringify({
+                'account_number': document.getElementById('account_number').value
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            return response.json();
+        }).then((jsonRes) => {
+            console.log(jsonRes)
+            document.getElementById('list_error').className = '';
+            document.getElementById('list_error').innerHTML = 'Your account balance is: N' + jsonRes.balance 
+        }).catch((err) => {
+            console.log(err);
+            document.getElementById('list_error').className = '';
+            document.getElementById('list_error').innerHTML = err.message
+        })
+    }
+</script>
+{% endblock %}

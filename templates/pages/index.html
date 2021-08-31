@@ -1,0 +1,18 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="home-container">
+            <h3>Wafi</h3>
+            <div class="card-containers">
+                <div class="cards"><a class="card-anchor" href="/register"><span class="textlabel">Add User</span> <i class="fa fa-plus"></i></a></div>
+                <div class="cards"><a class="card-anchor" href="/deposit"> <span class="textlabel">Deposite Money</span> <i class="fa fa-credit-card"></i> </a></div>
+            </div>
+            <div class="card-containers">
+                <div class="cards"><a class="card-anchor" href="/transfer"> <span class="textlabel">Send Money</span> <i class="fa fa-paper-plane"></i></a> </div>
+                <div class="cards"><a class="card-anchor" href="/balance">  <span class="textlabel">Check Balance</span> <i class="fa fa-hourglass-end"></i> </a></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

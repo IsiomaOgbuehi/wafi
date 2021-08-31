@@ -1,0 +1,54 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    
+        <div class="register-container formContainer">
+            <div id="list_error" class="hidden"></div>
+    <h3>Deposit Money</h3>
+    <form id='form' class="form-container">
+    <div class="form-div">
+        <input type='text' placeholder="Email" class='form-control' id='email' />
+    </div>
+    <div class="form-div">
+        <input type='number' placeholder="Amount" class='form-control' id="amount" />
+    </div>
+    <div class="form-div">
+        <input type='number' placeholder="Recipient Account Number" class='form-control' id="recipient_account" />
+    </div>
+    <div class="form-div btn-div">
+        <button class='btn'>Transfer</button>
+    </div>
+    </form>
+</div>
+</div>
+<script>
+    document.getElementById('form').onsubmit = (e) => {
+        e.preventDefault();
+
+        fetch('/transfer', {
+            method: 'POST',
+            body: JSON.stringify({
+                'email': document.getElementById('email').value,
+                'amount': document.getElementById('amount').value,
+                'recipient_account': document.getElementById('recipient_account').value
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            return response.json();
+        }).then((jsonRes) => {
+            console.log(jsonRes)
+            document.getElementById('list_error').className = '';
+            document.getElementById('list_error').innerHTML = jsonRes.message + '. Your account balance is: N' + jsonRes.balance 
+        }).catch((err) => {
+            console.log(err);
+            document.getElementById('list_error').className = '';
+            document.getElementById('list_error').innerHTML = err.message
+        })
+    }
+</script>
+{% endblock %}

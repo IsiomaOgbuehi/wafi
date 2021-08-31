@@ -1,0 +1,116 @@
+html, body{
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.container{
+    width: 100%;
+    height: 100vh;
+    margin: 0 auto;
+    /* background-color: aquamarine; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.register-container {
+width: 50%;
+height: 70%;
+/* background-color:rgb(250, 249, 246); */
+border-radius: 10px;
+}
+.home-container {
+    width: 50%;
+    height: 50%;
+    background-color:rgb(250, 249, 246);
+    border-radius: 10px;
+}
+.home-container h3,
+.register-container h3 {
+    text-align: center;
+}
+.card-containers{
+    margin: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+.cards {
+    width: 50%;
+    height: 150px;
+    background-color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 1s ease-in-out;
+    margin: 0 15px;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     font-size: large;
+     font-weight: 600;
+     box-shadow: 0 3px 6px #ddd;
+}
+.cards:hover{
+    transform: scale(0.95);
+}
+
+.card-anchor{
+    margin: auto;
+    display: block;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.7);
+    display:block;
+    height:100%;
+    width: 100%;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.textlabel{
+    margin-right: 15px;
+}
+
+.form-div{
+    width: 70%;
+    display: block;
+    margin: 20px auto;
+}
+.form-control{
+    width: 100%;
+    display: block;
+    height: 45px;
+    border: 1px solid #ddd;
+    outline: none;
+    box-shadow: none;
+    padding: 1px 10px;
+    border-radius: 5px;
+}
+.form-control:focus{
+    border: 1px solid #ddd;
+    outline: none;
+    box-shadow: none;
+    padding: auto 30px;
+}
+.form-container{
+    padding: 20px;
+}
+
+.btn{
+    width: 120px;
+    height: 30px;
+    margin: auto;
+    cursor: pointer;
+}
+.btn-div{
+    display: flex;
+    justify-content: center;
+}
+
+.formContainer{
+    box-shadow: 0 2px 5px #ddd;
+}
+#list_error{
+    width: 100%;
+    text-align: center;
+    margin: 5px auto;
+}

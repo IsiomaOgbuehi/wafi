@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, a
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
-from models import db, User, Transaction
+from models import db, User, Transaction, Currency
 
 # TODO: connect to a local postgresql database
 # db = SQLAlchemy(app)
@@ -56,6 +56,7 @@ def create_app(test_config=None):
                 email = data.get('email')
                 account = data.get('account_number')
                 password = data.get('password')
+                currency = data.get('currency')
                 
                 if not name or not email or not account or not password:
                     return jsonify({
@@ -71,16 +72,17 @@ def create_app(test_config=None):
                             'message': 'User Already Exists'
                         })
                         
-                    user = User(name=name, email=email, account_number=account, password=password)
+                    user = User(name=name, email=email, account_number=account,
+                                password=password, currency=currency)
                     user.insert()
+                    print(user.format())
                     return jsonify({
                         'success': True,
-                        'email': email,
-                        'message': 'User created'
+                        'data': user.format()
                     })
             except Exception as e:
                 return jsonify({
-                    'message': e
+                    'message': str(e)
                 }), 422
                 
                 
@@ -164,8 +166,28 @@ def create_app(test_config=None):
                             User).filter_by(account_number=recipient_account).first()
                         
                         if(recipient_user):
-                            recipient_user.account_balance = recipient_user.account_balance + amount
-                            sending_user.account_balance = sending_user.account_balance - amount
+                            if sending_user.currency != recipient_user.currency:
+                                sender_currency_value = db.session.query(
+                                    Currency).filter_by(currency_type=sending_user.currency).first()
+                                print('value')
+                                print(sender_currency_value.currency_value)
+                                
+                                recipient_currency_value = db.session.query(
+                                    Currency).filter_by(currency_type=recipient_user.currency).first()
+                                
+                                # Get Dollar Equivalent and convert
+                                
+                                dollar_equivalent = amount / sender_currency_value.currency_value
+                                converted = dollar_equivalent / recipient_currency_value.currency_value
+                                
+                                recipient_user.account_balance = recipient_user.account_balance + converted
+                                sending_user.account_balance = sending_user.account_balance - amount
+                                
+                            else:
+                                
+                                recipient_user.account_balance = recipient_user.account_balance + amount
+                                sending_user.account_balance = sending_user.account_balance - amount
+                                
                             sending_user.update()
                             recipient_user.update()
                             transaction = Transaction(transfer_type='Debit',
@@ -174,11 +196,14 @@ def create_app(test_config=None):
                                                       recipient_account=recipient_user.account_number,
                                                       user_id=sending_user.id)
                             transaction.insert()
+                            print(recipient_user.account_balance)
                             return jsonify({
                                 'message': 'Transfer Completed',
                                 'balance': sending_user.account_balance,
                                 'recipient_account': recipient_account,
-                                'success': True
+                                'success': True,
+                                'amount': amount,
+                                'email': email
                                 })
                             
                         else:
@@ -229,6 +254,52 @@ def create_app(test_config=None):
                     'success': False,
                     'message': 'User Not Found'
                 }), 404
+                
+    @app.route('/currency/add', methods=['POST'])
+    def addCurrency():
+        method = request.method
+        if method == 'POST':
+            data = request.get_json()
+            currency_type = data.get('currency_type')
+            currency_value = data.get('currency_value')
+            
+            if not currency_type or not currency_value:
+                return jsonify({
+                    'success': False,
+                    'message': 'Provide required Fields'
+                }), 412
+                
+            else:
+                try:
+                    currencies = db.session.query(Currency).all()
+                    for currency in currencies:
+                        if(currency.currency_type == currency_type):
+                            print(currency.currency_type)
+                            return jsonify({
+                                'success': False,
+                                'message': 'Currency Already Exists'
+                            }), 412
+                        
+                    currency = Currency(currency_type=currency_type,
+                                        currency_value=currency_value)
+                    currency.insert()
+                    return jsonify({
+                        'success': False,
+                        'data': currency.format()
+                    })
+
+                    
+                except Exception as e:
+                    return jsonify({
+                        'success': False,
+                        'message': str(e)
+                    }), 422
+            
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Wrong method'
+            }), 404
             
     '''
         HANDLE APP ERRORS

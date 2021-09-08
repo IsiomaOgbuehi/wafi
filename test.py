@@ -22,29 +22,25 @@ class WafiCase(unittest.TestCase):
 
     def tearDown(self):
         pass
-
-    def test_empty_db(self):
-        rv = self.client().get('/hello')
-        data = json.loads(rv.data)
         
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(data['val'], 'Halos')
-        
-        
-    # USER REGISTRATION TEST
+    # USER REGISTRATION TEST 1234567890
     def test_user_registration(self):
         res = self.client().post('/register',
-                                 json={'name': 'Maskot Rise', 'password': 'abc', 'account_balance': 0, 'email': 'maskot@test.com', 'account_number': '1234567890'})
+                                 json={'name': 'New User', 'password': 'abc', 'account_balance': 0, 'email': 'useroio@test.com', 'account_number': '1232188932',
+                                       'currency': 'USD'})
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(data['email'])
+        self.assertEqual(data['data']['email'], 'usero@test.com')
+        self.assertEqual(data['data']['name'], 'New User')
+        self.assertEqual(data['data']['account_balance'], 0.0)
+        self.assertEqual(data['data']['account_number'], '12147688932')
     
     # DEPOSIT MONEY
     def test_deposit_money(self):
         res = self.client().post(
-            '/deposit', json={'email': 'maskot@test.com', 'amount': 50})
+            '/deposit', json={'email': 'useroio@test.com', 'amount': 50})
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 200)
@@ -56,16 +52,19 @@ class WafiCase(unittest.TestCase):
     # TRANSFER MONEY
     def test_send_money(self):
         res = self.client().post('/transfer', 
-            json={'email': 'maskot@test.com',
+                                 json={'email': 'useroio@test.com',
                   'amount': 50, 'transfer_type': 'Debit', 'transaction_category': 'P2P',
-                  'recipient_account': '1234567890', 'user_id': 1})
+                  'recipient_account': '1232188932', 'user_id': 1})
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(data['recipient_account'])
+        self.assertEqual(data['recipient_account'], '1232188932')
         self.assertTrue(data['balance'])
+        self.assertEqual(data['amount'], 50)
+        self.assertEqual(data['email'], 'useroio@test.com')
         
+    # CHECK ACCOUNT BALANCE
 
     def test_check_account_balance(self):
         res = self.client().post('/balance',
@@ -75,6 +74,21 @@ class WafiCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['balance'])
+        
+    
+    # ADD CURRENCY
+    def test_add_currency(self):
+        res = self.client().post('/currency/add', json={
+            'currency_type': 'USD', 'currency_value': 1
+        })
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['currency'], 'USD')
+        self.assertEqual(data['value'], 1.0)
+      
+    
+        
 
 
 # Make the tests conveniently executable

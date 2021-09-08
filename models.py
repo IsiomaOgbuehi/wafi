@@ -17,16 +17,18 @@ class User(db.Model):
     password = db.Column(db.String(120), nullable=False)
     account_balance = db.Column(db.Integer, default=0)
     account_number = db.Column(db.String(120))
+    currency = db.Column(db.String, default='')
 
-    shows = db.relationship(
+    transactions = db.relationship(
         'Transaction', backref='transactions_user', lazy=True)
     __table_args__ = (db.UniqueConstraint('email', 'account_number'), )
     
-    def __init__(self, name, email, password, account_number):
+    def __init__(self, name, email, password, account_number, currency):
         self.name = name
         self.email = email
         self.password = password
         self.account_number = account_number
+        self.currency = currency
 
     def insert(self):
         db.session.add(self)
@@ -39,7 +41,9 @@ class User(db.Model):
         return {
             'name': self.name,
             'email': self.email,
-            'account_number': self.account_number
+            'account_number': self.account_number,
+            'currency': self.currency,
+            'account_balance': self.account_balance
         }
 
 
@@ -72,3 +76,29 @@ class Transaction(db.Model):
             'transaction_amount': self.transaction_amount,
             'recipient_account': self.recipient_account
         }
+        
+class Currency(db.Model):
+    __tablename__ = 'currencies'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    currency_type = db.Column(db.String, nullable=False, unique=True)  # USD, NGN, YEN, YUAN
+    currency_value = db.Column(db.Float, nullable=False)
+    
+    def __init__(self, currency_type, currency_value):
+        self.currency_type = currency_type
+        self.currency_value = currency_value
+        
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+        
+    def update(self):
+        db.session.commit()
+        
+        
+    def format(self):
+        return {
+            'currency': self.currency_type,
+            'value': self.currency_value
+        }
+        

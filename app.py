@@ -178,7 +178,7 @@ def create_app(test_config=None):
                                 # Get Dollar Equivalent and convert
                                 
                                 dollar_equivalent = amount / sender_currency_value.currency_value
-                                converted = dollar_equivalent / recipient_currency_value.currency_value
+                                converted = dollar_equivalent * recipient_currency_value.currency_value
                                 
                                 recipient_user.account_balance = recipient_user.account_balance + converted
                                 sending_user.account_balance = sending_user.account_balance - amount
